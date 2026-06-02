@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssessmentQuestionsRouteImport } from './routes/assessment.questions'
@@ -17,6 +18,11 @@ import { Route as AssessmentGoalRouteImport } from './routes/assessment.goal'
 import { Route as AssessmentCriteriaRouteImport } from './routes/assessment.criteria'
 import { Route as AssessmentAnalyzingRouteImport } from './routes/assessment.analyzing'
 
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -56,6 +62,7 @@ const AssessmentAnalyzingRoute = AssessmentAnalyzingRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/history': typeof HistoryRoute
   '/assessment/analyzing': typeof AssessmentAnalyzingRoute
   '/assessment/criteria': typeof AssessmentCriteriaRoute
   '/assessment/goal': typeof AssessmentGoalRoute
@@ -65,6 +72,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/history': typeof HistoryRoute
   '/assessment/analyzing': typeof AssessmentAnalyzingRoute
   '/assessment/criteria': typeof AssessmentCriteriaRoute
   '/assessment/goal': typeof AssessmentGoalRoute
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/history': typeof HistoryRoute
   '/assessment/analyzing': typeof AssessmentAnalyzingRoute
   '/assessment/criteria': typeof AssessmentCriteriaRoute
   '/assessment/goal': typeof AssessmentGoalRoute
@@ -86,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/history'
     | '/assessment/analyzing'
     | '/assessment/criteria'
     | '/assessment/goal'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/history'
     | '/assessment/analyzing'
     | '/assessment/criteria'
     | '/assessment/goal'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/dashboard'
+    | '/history'
     | '/assessment/analyzing'
     | '/assessment/criteria'
     | '/assessment/goal'
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  HistoryRoute: typeof HistoryRoute
   AssessmentAnalyzingRoute: typeof AssessmentAnalyzingRoute
   AssessmentCriteriaRoute: typeof AssessmentCriteriaRoute
   AssessmentGoalRoute: typeof AssessmentGoalRoute
@@ -123,6 +136,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -178,6 +198,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  HistoryRoute: HistoryRoute,
   AssessmentAnalyzingRoute: AssessmentAnalyzingRoute,
   AssessmentCriteriaRoute: AssessmentCriteriaRoute,
   AssessmentGoalRoute: AssessmentGoalRoute,
