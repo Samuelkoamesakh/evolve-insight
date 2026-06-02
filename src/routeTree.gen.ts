@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as HistoryRouteImport } from './routes/history'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,11 @@ import { Route as AssessmentGoalRouteImport } from './routes/assessment.goal'
 import { Route as AssessmentCriteriaRouteImport } from './routes/assessment.criteria'
 import { Route as AssessmentAnalyzingRouteImport } from './routes/assessment.analyzing'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HistoryRoute = HistoryRouteImport.update({
   id: '/history',
   path: '/history',
@@ -63,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/history': typeof HistoryRoute
+  '/settings': typeof SettingsRoute
   '/assessment/analyzing': typeof AssessmentAnalyzingRoute
   '/assessment/criteria': typeof AssessmentCriteriaRoute
   '/assessment/goal': typeof AssessmentGoalRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/history': typeof HistoryRoute
+  '/settings': typeof SettingsRoute
   '/assessment/analyzing': typeof AssessmentAnalyzingRoute
   '/assessment/criteria': typeof AssessmentCriteriaRoute
   '/assessment/goal': typeof AssessmentGoalRoute
@@ -84,6 +92,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
   '/history': typeof HistoryRoute
+  '/settings': typeof SettingsRoute
   '/assessment/analyzing': typeof AssessmentAnalyzingRoute
   '/assessment/criteria': typeof AssessmentCriteriaRoute
   '/assessment/goal': typeof AssessmentGoalRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/history'
+    | '/settings'
     | '/assessment/analyzing'
     | '/assessment/criteria'
     | '/assessment/goal'
@@ -106,6 +116,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/history'
+    | '/settings'
     | '/assessment/analyzing'
     | '/assessment/criteria'
     | '/assessment/goal'
@@ -116,6 +127,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard'
     | '/history'
+    | '/settings'
     | '/assessment/analyzing'
     | '/assessment/criteria'
     | '/assessment/goal'
@@ -127,6 +139,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
   HistoryRoute: typeof HistoryRoute
+  SettingsRoute: typeof SettingsRoute
   AssessmentAnalyzingRoute: typeof AssessmentAnalyzingRoute
   AssessmentCriteriaRoute: typeof AssessmentCriteriaRoute
   AssessmentGoalRoute: typeof AssessmentGoalRoute
@@ -136,6 +149,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/history': {
       id: '/history'
       path: '/history'
@@ -199,6 +219,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
   HistoryRoute: HistoryRoute,
+  SettingsRoute: SettingsRoute,
   AssessmentAnalyzingRoute: AssessmentAnalyzingRoute,
   AssessmentCriteriaRoute: AssessmentCriteriaRoute,
   AssessmentGoalRoute: AssessmentGoalRoute,
