@@ -1,6 +1,6 @@
-import { Link, Outlet, useLocation } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { Sparkles, LayoutDashboard, History, Settings, Shield, Home, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -10,7 +10,7 @@ const nav = [
   { to: "/admin", label: "Admin", icon: Shield },
 ];
 
-export function AppShell() {
+export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   return (
@@ -66,7 +66,7 @@ export function AppShell() {
           <div className="size-9" />
         </header>
         <main className="px-4 sm:px-6 lg:px-10 py-6 lg:py-10 max-w-7xl mx-auto">
-          <Outlet />
+          {children}
         </main>
       </div>
     </div>
