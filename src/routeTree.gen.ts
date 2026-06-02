@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AssessmentProfileRouteImport } from './routes/assessment.profile'
 import { Route as AssessmentGoalRouteImport } from './routes/assessment.goal'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssessmentProfileRoute = AssessmentProfileRouteImport.update({
+  id: '/assessment/profile',
+  path: '/assessment/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssessmentGoalRoute = AssessmentGoalRouteImport.update({
@@ -26,27 +32,31 @@ const AssessmentGoalRoute = AssessmentGoalRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assessment/goal': typeof AssessmentGoalRoute
+  '/assessment/profile': typeof AssessmentProfileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assessment/goal': typeof AssessmentGoalRoute
+  '/assessment/profile': typeof AssessmentProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/assessment/goal': typeof AssessmentGoalRoute
+  '/assessment/profile': typeof AssessmentProfileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/assessment/goal'
+  fullPaths: '/' | '/assessment/goal' | '/assessment/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/assessment/goal'
-  id: '__root__' | '/' | '/assessment/goal'
+  to: '/' | '/assessment/goal' | '/assessment/profile'
+  id: '__root__' | '/' | '/assessment/goal' | '/assessment/profile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssessmentGoalRoute: typeof AssessmentGoalRoute
+  AssessmentProfileRoute: typeof AssessmentProfileRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assessment/profile': {
+      id: '/assessment/profile'
+      path: '/assessment/profile'
+      fullPath: '/assessment/profile'
+      preLoaderRoute: typeof AssessmentProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assessment/goal': {
@@ -71,6 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssessmentGoalRoute: AssessmentGoalRoute,
+  AssessmentProfileRoute: AssessmentProfileRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
