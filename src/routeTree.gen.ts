@@ -9,6 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
@@ -21,69 +25,91 @@ import { Route as AuthenticatedAssessmentGoalRouteImport } from './routes/_authe
 import { Route as AuthenticatedAssessmentCriteriaRouteImport } from './routes/_authenticated/assessment.criteria'
 import { Route as AuthenticatedAssessmentAnalyzingRouteImport } from './routes/_authenticated/assessment.analyzing'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
-  id: '/_authenticated/settings',
+  id: '/settings',
   path: '/settings',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
-  id: '/_authenticated/history',
+  id: '/history',
   path: '/history',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/_authenticated/dashboard',
+  id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/_authenticated/admin',
+  id: '/admin',
   path: '/admin',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedReportIdRoute = AuthenticatedReportIdRouteImport.update({
-  id: '/_authenticated/report/$id',
+  id: '/report/$id',
   path: '/report/$id',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAssessmentQuestionsRoute =
   AuthenticatedAssessmentQuestionsRouteImport.update({
-    id: '/_authenticated/assessment/questions',
+    id: '/assessment/questions',
     path: '/assessment/questions',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAssessmentProfileRoute =
   AuthenticatedAssessmentProfileRouteImport.update({
-    id: '/_authenticated/assessment/profile',
+    id: '/assessment/profile',
     path: '/assessment/profile',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAssessmentGoalRoute =
   AuthenticatedAssessmentGoalRouteImport.update({
-    id: '/_authenticated/assessment/goal',
+    id: '/assessment/goal',
     path: '/assessment/goal',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAssessmentCriteriaRoute =
   AuthenticatedAssessmentCriteriaRouteImport.update({
-    id: '/_authenticated/assessment/criteria',
+    id: '/assessment/criteria',
     path: '/assessment/criteria',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAssessmentAnalyzingRoute =
   AuthenticatedAssessmentAnalyzingRouteImport.update({
-    id: '/_authenticated/assessment/analyzing',
+    id: '/assessment/analyzing',
     path: '/assessment/analyzing',
-    getParentRoute: () => rootRouteImport,
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
@@ -97,6 +123,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
@@ -111,6 +140,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
@@ -126,6 +159,9 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/auth'
+    | '/forgot-password'
+    | '/reset-password'
     | '/admin'
     | '/dashboard'
     | '/history'
@@ -139,6 +175,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
+    | '/forgot-password'
+    | '/reset-password'
     | '/admin'
     | '/dashboard'
     | '/history'
@@ -152,6 +191,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/forgot-password'
+    | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/history'
@@ -166,20 +209,42 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
-  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
-  AuthenticatedAssessmentAnalyzingRoute: typeof AuthenticatedAssessmentAnalyzingRoute
-  AuthenticatedAssessmentCriteriaRoute: typeof AuthenticatedAssessmentCriteriaRoute
-  AuthenticatedAssessmentGoalRoute: typeof AuthenticatedAssessmentGoalRoute
-  AuthenticatedAssessmentProfileRoute: typeof AuthenticatedAssessmentProfileRoute
-  AuthenticatedAssessmentQuestionsRoute: typeof AuthenticatedAssessmentQuestionsRoute
-  AuthenticatedReportIdRoute: typeof AuthenticatedReportIdRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -192,76 +257,88 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/history': {
       id: '/_authenticated/history'
       path: '/history'
       fullPath: '/history'
       preLoaderRoute: typeof AuthenticatedHistoryRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/report/$id': {
       id: '/_authenticated/report/$id'
       path: '/report/$id'
       fullPath: '/report/$id'
       preLoaderRoute: typeof AuthenticatedReportIdRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/assessment/questions': {
       id: '/_authenticated/assessment/questions'
       path: '/assessment/questions'
       fullPath: '/assessment/questions'
       preLoaderRoute: typeof AuthenticatedAssessmentQuestionsRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/assessment/profile': {
       id: '/_authenticated/assessment/profile'
       path: '/assessment/profile'
       fullPath: '/assessment/profile'
       preLoaderRoute: typeof AuthenticatedAssessmentProfileRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/assessment/goal': {
       id: '/_authenticated/assessment/goal'
       path: '/assessment/goal'
       fullPath: '/assessment/goal'
       preLoaderRoute: typeof AuthenticatedAssessmentGoalRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/assessment/criteria': {
       id: '/_authenticated/assessment/criteria'
       path: '/assessment/criteria'
       fullPath: '/assessment/criteria'
       preLoaderRoute: typeof AuthenticatedAssessmentCriteriaRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/assessment/analyzing': {
       id: '/_authenticated/assessment/analyzing'
       path: '/assessment/analyzing'
       fullPath: '/assessment/analyzing'
       preLoaderRoute: typeof AuthenticatedAssessmentAnalyzingRouteImport
-      parentRoute: typeof rootRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
-const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
+  AuthenticatedAssessmentAnalyzingRoute: typeof AuthenticatedAssessmentAnalyzingRoute
+  AuthenticatedAssessmentCriteriaRoute: typeof AuthenticatedAssessmentCriteriaRoute
+  AuthenticatedAssessmentGoalRoute: typeof AuthenticatedAssessmentGoalRoute
+  AuthenticatedAssessmentProfileRoute: typeof AuthenticatedAssessmentProfileRoute
+  AuthenticatedAssessmentQuestionsRoute: typeof AuthenticatedAssessmentQuestionsRoute
+  AuthenticatedReportIdRoute: typeof AuthenticatedReportIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
@@ -272,6 +349,17 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedAssessmentProfileRoute: AuthenticatedAssessmentProfileRoute,
   AuthenticatedAssessmentQuestionsRoute: AuthenticatedAssessmentQuestionsRoute,
   AuthenticatedReportIdRoute: AuthenticatedReportIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
