@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHistoryRouteImport } from './routes/_authenticated/history'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -52,6 +53,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHistoryRoute = AuthenticatedHistoryRouteImport.update({
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/assessment/analyzing': typeof AuthenticatedAssessmentAnalyzingRoute
   '/assessment/criteria': typeof AuthenticatedAssessmentCriteriaRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/history': typeof AuthenticatedHistoryRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/assessment/analyzing': typeof AuthenticatedAssessmentAnalyzingRoute
   '/assessment/criteria': typeof AuthenticatedAssessmentCriteriaRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/history': typeof AuthenticatedHistoryRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/assessment/analyzing': typeof AuthenticatedAssessmentAnalyzingRoute
   '/_authenticated/assessment/criteria': typeof AuthenticatedAssessmentCriteriaRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/history'
+    | '/profile'
     | '/settings'
     | '/assessment/analyzing'
     | '/assessment/criteria'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/history'
+    | '/profile'
     | '/settings'
     | '/assessment/analyzing'
     | '/assessment/criteria'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/history'
+    | '/_authenticated/profile'
     | '/_authenticated/settings'
     | '/_authenticated/assessment/analyzing'
     | '/_authenticated/assessment/criteria'
@@ -257,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/history': {
@@ -329,6 +348,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedHistoryRoute: typeof AuthenticatedHistoryRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedAssessmentAnalyzingRoute: typeof AuthenticatedAssessmentAnalyzingRoute
   AuthenticatedAssessmentCriteriaRoute: typeof AuthenticatedAssessmentCriteriaRoute
@@ -342,6 +362,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedHistoryRoute: AuthenticatedHistoryRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedAssessmentAnalyzingRoute: AuthenticatedAssessmentAnalyzingRoute,
   AuthenticatedAssessmentCriteriaRoute: AuthenticatedAssessmentCriteriaRoute,
