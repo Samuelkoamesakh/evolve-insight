@@ -55,7 +55,14 @@ function GoalPage() {
           <Link to="/" className="text-sm text-muted-foreground hover:text-foreground">Batal</Link>
           <button
             disabled={!selected && !custom.trim()}
-            onClick={() => nav({ to: "/assessment/profile" })}
+            onClick={() => {
+              const g = assessmentGoals.find((x) => x.id === selected);
+              if (typeof window !== "undefined") {
+                sessionStorage.setItem("kapable:lastGoalId", selected ?? "custom");
+                sessionStorage.setItem("kapable:lastGoal", g?.title ?? custom.trim() ?? "Tujuan Kustom");
+              }
+              nav({ to: "/assessment/profile" });
+            }}
             className="inline-flex items-center gap-2 rounded-full bg-gradient-primary text-primary-foreground font-medium px-6 py-3 shadow-glow disabled:opacity-50 disabled:cursor-not-allowed">
             Lanjutkan <ArrowRight className="size-4" />
           </button>
