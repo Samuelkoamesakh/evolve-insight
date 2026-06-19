@@ -1,157 +1,232 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { mockResult } from "@/lib/mock-data";
-import { Award, Download, Share2, TrendingUp, AlertCircle, Target, MapPin, Sparkles, ArrowRight } from "lucide-react";
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer, PolarRadiusAxis } from "recharts";
+import { mockHistory, mockResult } from "@/lib/mock-data";
+import {
+  ArrowRight, ArrowUpRight, Sparkles, Plus, Trophy, Flame, Target, TrendingUp,
+  CalendarCheck, Clock, FileBarChart,
+} from "lucide-react";
 import { motion } from "framer-motion";
+import {
+  Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,
+} from "recharts";
 
 export const Route = createFileRoute("/dashboard")({
-  head: () => ({ meta: [{ title: "Hasil Asesmen — Kapable.ai" }, { name: "description", content: "Skor kemampuan, kekuatan, area pengembangan, peran yang direkomendasikan, dan roadmap 30 hari." }] }),
-  component: Dashboard,
+  head: () => ({
+    meta: [
+      { title: "Dashboard — Kapable.ai" },
+      { name: "description", content: "Ringkasan progres asesmen, skor terbaru, dan capaian pengembangan kemampuanmu." },
+    ],
+  }),
+  component: DashboardHome,
 });
 
-function Dashboard() {
-  const r = mockResult;
+const progressData = [...mockHistory]
+  .slice()
+  .reverse()
+  .map((h) => ({ date: h.date.split(" ").slice(0, 2).join(" "), score: h.score }));
+
+function DashboardHome() {
+  const latest = mockHistory[0];
+  const avg = Math.round(mockHistory.reduce((s, h) => s + h.score, 0) / mockHistory.length);
+  const best = Math.max(...mockHistory.map((h) => h.score));
+  const completed = mockHistory.length;
+  const delta = mockHistory.length > 1 ? mockHistory[0].score - mockHistory[1].score : 0;
+
   return (
     <AppShell>
       <div className="space-y-8">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-soft px-3 py-1 text-xs"><Sparkles className="size-3 text-primary" /> Hasil terbaru · 2 Juni 2026</div>
-            <h1 className="mt-3 text-3xl sm:text-4xl font-bold tracking-tight">Profil Kemampuan Kreatif-Analitis</h1>
-            <p className="mt-2 text-muted-foreground max-w-2xl">{r.summary}</p>
+        {/* Welcome */}
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:flex-wrap sm:justify-between">
+          <div className="min-w-0">
+            <div className="inline-flex items-center gap-2 rounded-full bg-gradient-soft px-3 py-1 text-xs">
+              <Sparkles className="size-3 text-primary" /> Welcome back
+            </div>
+            <h1 className="mt-3 truncate text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
+              Halo, Alya 👋
+            </h1>
+            <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-2xl">
+              Lanjutkan perjalananmu mengenal kemampuan. Berikut ringkasan progresmu sejauh ini.
+            </p>
           </div>
-          <div className="flex gap-2">
-            <button className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm hover:bg-secondary"><Share2 className="size-4" /> Bagikan</button>
-            <button className="inline-flex items-center gap-2 rounded-full bg-gradient-primary text-primary-foreground px-4 py-2 text-sm shadow-glow"><Download className="size-4" /> Unduh PDF</button>
-          </div>
+          <Link
+            to="/assessment/goal"
+            className="shrink-0 inline-flex items-center gap-2 rounded-full bg-gradient-primary text-primary-foreground px-4 py-2 text-sm font-medium shadow-glow"
+          >
+            <Plus className="size-4" /> <span className="hidden sm:inline">Asesmen baru</span>
+          </Link>
         </div>
 
+        {/* Stat cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
+            icon={Trophy}
+            label="Skor Terbaru"
+            value={latest.score.toString()}
+            sub={`${latest.goal} · ${latest.date}`}
+            accent
+            delta={delta}
+          />
+          <StatCard icon={Flame} label="Skor Tertinggi" value={best.toString()} sub="All-time best" />
+          <StatCard icon={Target} label="Rata-rata" value={avg.toString()} sub={`dari ${completed} asesmen`} />
+          <StatCard icon={CalendarCheck} label="Selesai" value={completed.toString()} sub="Asesmen dijalankan" />
+        </div>
+
+        {/* Latest result + Progress */}
         <div className="grid lg:grid-cols-3 gap-5">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl border border-border bg-gradient-primary text-primary-foreground p-6 shadow-lift relative overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="rounded-3xl border border-border bg-gradient-primary text-primary-foreground p-6 shadow-lift relative overflow-hidden"
+          >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,white,transparent_60%)] opacity-20" aria-hidden />
             <div className="relative">
-              <div className="text-xs uppercase tracking-widest opacity-80">Overall Capability Score</div>
+              <div className="text-xs uppercase tracking-widest opacity-80">Latest Assessment Score</div>
               <div className="mt-3 flex items-end gap-2">
-                <div className="text-7xl font-bold leading-none">{r.overallScore}</div>
+                <div className="text-6xl sm:text-7xl font-bold leading-none">{latest.score}</div>
                 <div className="pb-2 opacity-80">/ 100</div>
               </div>
-              <div className="mt-2 inline-flex items-center gap-1 text-sm bg-background/15 rounded-full px-3 py-1"><Award className="size-3.5" /> Level: {r.level}</div>
-              <div className="mt-6 h-1.5 rounded-full bg-background/20 overflow-hidden">
-                <motion.div initial={{ width: 0 }} animate={{ width: `${r.overallScore}%` }} transition={{ duration: 1 }} className="h-full bg-background/80" />
+              <div className="mt-2 inline-flex items-center gap-1 text-sm bg-background/15 rounded-full px-3 py-1">
+                <Sparkles className="size-3.5" /> {latest.level} · {latest.goal}
               </div>
-              <p className="mt-4 text-sm opacity-90">Lebih tinggi dari 78% pengguna dengan tujuan serupa.</p>
+              <div className="mt-6 h-1.5 rounded-full bg-background/20 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${latest.score}%` }}
+                  transition={{ duration: 1 }}
+                  className="h-full bg-background/80"
+                />
+              </div>
+              <Link
+                to="/report/$id"
+                params={{ id: latest.id }}
+                className="mt-6 inline-flex items-center gap-2 rounded-full bg-background text-foreground font-medium px-4 py-2 text-sm hover:opacity-95"
+              >
+                Lihat laporan lengkap <ArrowUpRight className="size-4" />
+              </Link>
             </div>
           </motion.div>
 
           <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-6 shadow-soft">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
-                <h2 className="font-display font-semibold text-lg">Peta Kemampuan</h2>
-                <p className="text-sm text-muted-foreground">Distribusi skor per kriteria.</p>
+                <h2 className="font-display font-semibold text-lg">Progress Overview</h2>
+                <p className="text-sm text-muted-foreground">Tren skor dari setiap asesmen yang telah kamu kerjakan.</p>
+              </div>
+              <div className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                <TrendingUp className="size-3.5 text-success" /> {delta >= 0 ? `+${delta}` : delta} pts vs sebelumnya
               </div>
             </div>
-            <div className="h-72">
+            <div className="h-64 mt-4 -ml-2">
               <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={r.radar}>
-                  <PolarGrid stroke="var(--color-border)" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} />
-                  <PolarRadiusAxis angle={90} domain={[0, 100]} tick={false} axisLine={false} />
-                  <Radar dataKey="value" stroke="var(--color-primary)" fill="var(--color-primary)" fillOpacity={0.35} />
-                </RadarChart>
+                <AreaChart data={progressData} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
+                  <defs>
+                    <linearGradient id="scoreGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="var(--color-border)" strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} />
+                  <YAxis domain={[0, 100]} tick={{ fill: "var(--color-muted-foreground)", fontSize: 11 }} axisLine={false} tickLine={false} width={28} />
+                  <Tooltip
+                    contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: 12, fontSize: 12 }}
+                    labelStyle={{ color: "var(--color-muted-foreground)" }}
+                  />
+                  <Area type="monotone" dataKey="score" stroke="var(--color-primary)" strokeWidth={2.5} fill="url(#scoreGrad)" />
+                </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-5">
-          <Card icon={TrendingUp} title="Top Strengths" tone="success">
-            <div className="space-y-3 mt-4">
-              {r.strengths.map((s) => <ScoreRow key={s.title} title={s.title} score={s.score} note={s.note} tone="success" />)}
+        {/* Recent + quick actions */}
+        <div className="grid lg:grid-cols-3 gap-5">
+          <div className="lg:col-span-2 rounded-3xl border border-border bg-card p-6 shadow-soft">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <h2 className="font-display font-semibold text-lg">Asesmen Terbaru</h2>
+              <Link to="/history" className="text-sm font-medium text-primary inline-flex items-center gap-1">
+                Lihat semua <ArrowRight className="size-4" />
+              </Link>
             </div>
-          </Card>
-          <Card icon={AlertCircle} title="Area Pengembangan" tone="warning">
-            <div className="space-y-3 mt-4">
-              {r.growth.map((s) => <ScoreRow key={s.title} title={s.title} score={s.score} note={s.note} tone="warning" />)}
-            </div>
-          </Card>
-        </div>
-
-        <Card icon={Target} title="Peran yang Direkomendasikan">
-          <div className="mt-4 grid sm:grid-cols-2 gap-3">
-            {r.roles.map((role) => (
-              <div key={role.name} className="rounded-2xl border border-border bg-secondary/40 p-4">
-                <div className="flex items-center justify-between">
-                  <div className="font-display font-semibold">{role.name}</div>
-                  <div className="text-sm font-bold text-primary">{role.match}% match</div>
+            <div className="mt-4 divide-y divide-border">
+              {mockHistory.slice(0, 4).map((h) => (
+                <div key={h.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 py-3 sm:flex sm:flex-wrap">
+                  <div className="min-w-0 flex items-center gap-3">
+                    <div className="size-10 shrink-0 rounded-xl bg-gradient-soft grid place-items-center text-primary">
+                      <FileBarChart className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-medium truncate">{h.goal}</div>
+                      <div className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Clock className="size-3" /> {h.date}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0 sm:ml-auto">
+                    <span className="text-lg font-bold text-gradient">{h.score}</span>
+                    <Link
+                      to="/report/$id"
+                      params={{ id: h.id }}
+                      className="text-xs sm:text-sm font-medium text-primary inline-flex items-center gap-1"
+                    >
+                      Detail <ArrowRight className="size-3.5" />
+                    </Link>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">{role.why}</p>
-                <div className="mt-3 h-1.5 rounded-full bg-background overflow-hidden">
-                  <div className="h-full bg-gradient-primary" style={{ width: `${role.match}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
-        <Card icon={Sparkles} title="Skill yang Direkomendasikan untuk Dipelajari">
-          <div className="mt-4 flex flex-wrap gap-2">
-            {r.skills.map((s) => <span key={s} className="rounded-full bg-gradient-soft border border-border px-3 py-1.5 text-sm">{s}</span>)}
-          </div>
-        </Card>
-
-        <Card icon={MapPin} title="Action Plan — Roadmap 30 Hari">
-          <div className="mt-6 relative">
-            <div className="absolute left-4 top-2 bottom-2 w-px bg-border" aria-hidden />
-            <div className="space-y-6">
-              {r.roadmap.map((w, i) => (
-                <motion.div key={w.week} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="relative pl-12">
-                  <div className="absolute left-0 top-1 size-8 rounded-full bg-gradient-primary text-primary-foreground grid place-items-center text-xs font-bold shadow-glow">{i + 1}</div>
-                  <div className="text-xs uppercase tracking-widest text-primary">{w.week}</div>
-                  <div className="font-display font-semibold mt-1">{w.title}</div>
-                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
-                    {w.items.map((it) => <li key={it} className="flex items-start gap-2"><span className="mt-1.5 size-1 rounded-full bg-primary" /> {it}</li>)}
-                  </ul>
-                </motion.div>
               ))}
             </div>
           </div>
-        </Card>
 
-        <div className="rounded-3xl border border-dashed border-border bg-card/60 p-6 text-sm text-muted-foreground flex flex-wrap items-center justify-between gap-3">
-          <div>⚠️ Hasil ini bersifat indikatif. Gunakan sebagai panduan, bukan keputusan mutlak.</div>
-          <Link to="/assessment/goal" className="inline-flex items-center gap-2 text-primary font-medium">Asesmen lagi <ArrowRight className="size-4" /></Link>
+          <div className="rounded-3xl border border-border bg-card p-6 shadow-soft flex flex-col">
+            <h2 className="font-display font-semibold text-lg">Highlight Kemampuan</h2>
+            <p className="text-sm text-muted-foreground">3 kekuatan teratas dari laporan terakhirmu.</p>
+            <div className="mt-4 space-y-3 flex-1">
+              {mockResult.strengths.map((s) => (
+                <div key={s.title} className="rounded-2xl bg-secondary/40 p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="font-medium text-sm">{s.title}</div>
+                    <div className="text-sm font-bold">{s.score}</div>
+                  </div>
+                  <div className="mt-2 h-1.5 rounded-full bg-background overflow-hidden">
+                    <div className="h-full bg-gradient-primary" style={{ width: `${s.score}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <Link
+              to="/report/$id"
+              params={{ id: latest.id }}
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-gradient-primary text-primary-foreground text-sm font-medium px-4 py-2.5 shadow-glow"
+            >
+              Buka laporan kemampuan <ArrowRight className="size-4" />
+            </Link>
+          </div>
         </div>
       </div>
     </AppShell>
   );
 }
 
-function Card({ icon: Icon, title, tone, children }: { icon: React.ElementType; title: string; tone?: "success" | "warning"; children: React.ReactNode }) {
-  const toneCls = tone === "success" ? "bg-success/10 text-success" : tone === "warning" ? "bg-warning/15 text-warning" : "bg-gradient-soft text-primary";
+function StatCard({
+  icon: Icon, label, value, sub, accent, delta,
+}: {
+  icon: React.ElementType; label: string; value: string; sub?: string; accent?: boolean; delta?: number;
+}) {
   return (
-    <div className="rounded-3xl border border-border bg-card p-6 shadow-soft">
-      <div className="flex items-center gap-3">
-        <div className={`size-9 rounded-xl grid place-items-center ${toneCls}`}><Icon className="size-4" /></div>
-        <h2 className="font-display font-semibold text-lg">{title}</h2>
-      </div>
-      {children}
-    </div>
-  );
-}
-
-function ScoreRow({ title, score, note, tone }: { title: string; score: number; note: string; tone: "success" | "warning" }) {
-  const bar = tone === "success" ? "bg-success" : "bg-warning";
-  return (
-    <div className="rounded-2xl bg-secondary/40 p-4">
+    <div className={`rounded-2xl border border-border p-4 sm:p-5 shadow-soft ${accent ? "bg-gradient-soft" : "bg-card"}`}>
       <div className="flex items-center justify-between">
-        <div className="font-medium">{title}</div>
-        <div className="text-sm font-bold">{score}</div>
+        <div className="size-9 rounded-xl bg-background grid place-items-center text-primary shrink-0">
+          <Icon className="size-4" />
+        </div>
+        {typeof delta === "number" && delta !== 0 && (
+          <span className={`text-[10px] font-semibold rounded-full px-2 py-0.5 ${delta > 0 ? "bg-success/15 text-success" : "bg-warning/15 text-warning"}`}>
+            {delta > 0 ? `+${delta}` : delta}
+          </span>
+        )}
       </div>
-      <div className="mt-2 h-1.5 rounded-full bg-background overflow-hidden">
-        <div className={`h-full ${bar}`} style={{ width: `${score}%` }} />
-      </div>
-      <p className="text-sm text-muted-foreground mt-2">{note}</p>
+      <div className="mt-3 text-2xl sm:text-3xl font-bold tracking-tight">{value}</div>
+      <div className="text-xs text-muted-foreground mt-0.5 truncate">{label}</div>
+      {sub && <div className="text-[11px] text-muted-foreground/80 mt-1 truncate">{sub}</div>}
     </div>
   );
 }
