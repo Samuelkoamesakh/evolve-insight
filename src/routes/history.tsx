@@ -42,7 +42,7 @@ function HistoryPage() {
                   <td className="p-4 font-medium">{h.goal}</td>
                   <td className="p-4"><span className="font-bold text-gradient">{h.score}</span></td>
                   <td className="p-4"><span className="text-xs rounded-full bg-gradient-soft px-2 py-1">{h.level}</span></td>
-                  <td className="p-4 text-right"><Link to="/dashboard" className="inline-flex items-center gap-1 text-primary font-medium text-sm">Lihat <ArrowRight className="size-4" /></Link></td>
+                  <td className="p-4 text-right"><Link to="/report/$id" params={{ id: h.id }} className="inline-flex items-center gap-1 text-primary font-medium text-sm">View Details <ArrowRight className="size-4" /></Link></td>
                 </tr>
               ))}
             </tbody>
