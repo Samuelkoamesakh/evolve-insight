@@ -45,7 +45,7 @@ function ReportPage() {
       return data;
     },
   });
-  const r = (entry?.result as any) ?? mockResult;
+  const r = ((entry?.result as unknown) as typeof mockResult) ?? mockResult;
   const reportRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
 
