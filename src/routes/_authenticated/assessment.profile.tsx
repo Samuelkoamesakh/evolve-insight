@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { StepIndicator } from "./assessment.goal";
 
-export const Route = createFileRoute("/_authenticated/_authenticated/assessment/profile")({
+export const Route = createFileRoute("/_authenticated/assessment/profile")({
   head: () => ({ meta: [{ title: "Profil Singkat — Kapable.ai" }, { name: "description", content: "Isi profil singkat agar analisis AI lebih personal." }] }),
   component: ProfilePage,
 });

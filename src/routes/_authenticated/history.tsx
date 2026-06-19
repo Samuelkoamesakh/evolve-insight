@@ -4,7 +4,7 @@ import { mockHistory } from "@/lib/mock-data";
 import { Plus, ArrowRight, FileText, Search } from "lucide-react";
 import { useState } from "react";
 
-export const Route = createFileRoute("/_authenticated/_authenticated/history")({
+export const Route = createFileRoute("/_authenticated/history")({
   head: () => ({ meta: [{ title: "Riwayat Asesmen — Kapable.ai" }, { name: "description", content: "Lihat semua asesmen yang pernah kamu kerjakan." }] }),
   component: HistoryPage,
 });

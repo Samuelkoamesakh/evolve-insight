@@ -3,7 +3,7 @@ import { AppShell } from "@/components/AppShell";
 import { User, Bell, Lock, Trash2, Mail, Globe } from "lucide-react";
 import { useState } from "react";
 
-export const Route = createFileRoute("/_authenticated/_authenticated/settings")({
+export const Route = createFileRoute("/_authenticated/settings")({
   head: () => ({ meta: [{ title: "Pengaturan — Kapable.ai" }, { name: "description", content: "Kelola profil, notifikasi, dan privasi." }] }),
   component: SettingsPage,
 });
