@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Sparkles, ArrowRight, Brain, Target, LineChart, Wand2, ShieldCheck, Zap, CheckCircle2,
   ClipboardList, Cpu, UserCheck, Map as MapIcon, Users, Smile, Trophy, Star, Plus, Minus,
@@ -20,6 +21,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const { user } = useAuth();
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-mesh pointer-events-none" aria-hidden />
@@ -32,11 +34,21 @@ function Landing() {
           <a href="#features" className="hover:text-foreground">Fitur</a>
           <a href="#categories" className="hover:text-foreground">Kategori</a>
           <a href="#how" className="hover:text-foreground">Cara Kerja</a>
-          <Link to="/dashboard" className="hover:text-foreground">Dashboard</Link>
+          {user ? (
+            <Link to="/dashboard" className="hover:text-foreground">Dashboard</Link>
+          ) : (
+            <Link to="/auth" className="hover:text-foreground">Masuk</Link>
+          )}
         </nav>
-        <Link to="/assessment/goal" className="inline-flex items-center gap-2 rounded-full bg-gradient-primary text-primary-foreground text-sm font-medium px-4 py-2 shadow-glow hover:opacity-95 transition">
-          Start Free Assessment <ArrowRight className="size-4" />
-        </Link>
+        {user ? (
+          <Link to="/dashboard" className="inline-flex items-center gap-2 rounded-full bg-gradient-primary text-primary-foreground text-sm font-medium px-4 py-2 shadow-glow hover:opacity-95 transition">
+            Buka Dashboard <ArrowRight className="size-4" />
+          </Link>
+        ) : (
+          <Link to="/auth" className="inline-flex items-center gap-2 rounded-full bg-gradient-primary text-primary-foreground text-sm font-medium px-4 py-2 shadow-glow hover:opacity-95 transition">
+            Masuk / Daftar <ArrowRight className="size-4" />
+          </Link>
+        )}
       </header>
 
       {/* Hero */}

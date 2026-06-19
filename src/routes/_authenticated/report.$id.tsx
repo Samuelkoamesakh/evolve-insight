@@ -1,6 +1,8 @@
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { mockHistory, mockResult } from "@/lib/mock-data";
+import { mockResult } from "@/lib/mock-data";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Award, Download, Share2, TrendingUp, AlertCircle, Target, MapPin, Sparkles,
   ArrowLeft, BookOpen, Loader2,
@@ -11,7 +13,7 @@ import {
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 
-export const Route = createFileRoute("/report/$id")({
+export const Route = createFileRoute("/_authenticated/report/$id")({
   head: () => ({
     meta: [
       { title: "Capability Report — Kapable.ai" },
@@ -30,9 +32,20 @@ export const Route = createFileRoute("/report/$id")({
 });
 
 function ReportPage() {
-  const { id } = useParams({ from: "/report/$id" });
-  const entry = mockHistory.find((h) => h.id === id) ?? mockHistory[0];
-  const r = mockResult;
+  const { id } = useParams({ from: "/_authenticated/report/$id" });
+  const { data: entry, isLoading } = useQuery({
+    queryKey: ["assessment", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("assessments")
+        .select("id, goal, score, level, summary, result, created_at")
+        .eq("id", id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  const r = ((entry?.result as unknown) as typeof mockResult) ?? mockResult;
   const reportRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -51,7 +64,7 @@ function ReportPage() {
         import("html2canvas"),
         import("jspdf"),
       ]);
-      const canvas = await html2canvas(reportRef.current, {
+      const canvas = await html2canvas(reportRef.current!, {
         scale: 2,
         backgroundColor: getComputedStyle(document.body).backgroundColor || "#ffffff",
         useCORS: true,
@@ -72,7 +85,7 @@ function ReportPage() {
         pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
-      pdf.save(`kapable-report-${entry.id}.pdf`);
+      pdf.save(`kapable-report-${id}.pdf`);
     } catch (err) {
       console.error(err);
       alert("Gagal mengunduh laporan. Coba lagi.");
@@ -85,13 +98,16 @@ function ReportPage() {
     <AppShell>
       <div className="space-y-6">
         {/* Top bar */}
+        {isLoading && (
+          <div className="grid place-items-center py-8 text-muted-foreground"><Loader2 className="size-5 animate-spin" /></div>
+        )}
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap sm:justify-between">
           <div className="min-w-0">
             <Link to="/history" className="text-xs text-muted-foreground inline-flex items-center gap-1 hover:text-foreground">
               <ArrowLeft className="size-3.5" /> Kembali ke riwayat
             </Link>
             <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-gradient-soft px-3 py-1 text-xs">
-              <Sparkles className="size-3 text-primary" /> Capability Report · {entry.date}
+              <Sparkles className="size-3 text-primary" /> Capability Report · {entry ? new Date(entry.created_at).toLocaleDateString("id-ID") : ""}
             </div>
           </div>
           <div className="flex gap-2 shrink-0">
@@ -111,8 +127,8 @@ function ReportPage() {
 
         <div ref={reportRef} className="space-y-6 bg-background">
           <div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">Profil Kemampuan — {entry.goal}</h1>
-            <p className="mt-2 text-muted-foreground max-w-2xl text-sm sm:text-base">{r.summary}</p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">Profil Kemampuan — {entry?.goal ?? "Asesmen"}</h1>
+            <p className="mt-2 text-muted-foreground max-w-2xl text-sm sm:text-base">{entry?.summary ?? r.summary}</p>
           </div>
 
           {/* Score + Radar */}
@@ -125,14 +141,14 @@ function ReportPage() {
               <div className="relative">
                 <div className="text-xs uppercase tracking-widest opacity-80">Overall Capability Score</div>
                 <div className="mt-3 flex items-end gap-2">
-                  <div className="text-6xl sm:text-7xl font-bold leading-none">{r.overallScore}</div>
+                  <div className="text-6xl sm:text-7xl font-bold leading-none">{entry?.score ?? r.overallScore}</div>
                   <div className="pb-2 opacity-80">/ 100</div>
                 </div>
                 <div className="mt-2 inline-flex items-center gap-1 text-sm bg-background/15 rounded-full px-3 py-1">
-                  <Award className="size-3.5" /> Level: {r.level}
+                  <Award className="size-3.5" /> Level: {entry?.level ?? r.level}
                 </div>
                 <div className="mt-6 h-1.5 rounded-full bg-background/20 overflow-hidden">
-                  <div className="h-full bg-background/80" style={{ width: `${r.overallScore}%` }} />
+                  <div className="h-full bg-background/80" style={{ width: `${entry?.score ?? r.overallScore}%` }} />
                 </div>
                 <p className="mt-4 text-sm opacity-90">Lebih tinggi dari 78% pengguna dengan tujuan serupa.</p>
               </div>

@@ -1,12 +1,19 @@
-import { Link, useLocation } from "@tanstack/react-router";
-import { Sparkles, LayoutDashboard, History, Settings, Shield, Home, Menu, X, FileBarChart } from "lucide-react";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
+import {
+  Sparkles, LayoutDashboard, History, Settings, Shield, Home, Menu, X, FileBarChart,
+  User as UserIcon, LogOut,
+} from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { to: "/report/a1", label: "Capability Report", icon: FileBarChart },
   { to: "/history", label: "Riwayat Asesmen", icon: History },
+  { to: "/profile", label: "Profil", icon: UserIcon },
   { to: "/settings", label: "Pengaturan", icon: Settings },
   { to: "/admin", label: "Admin", icon: Shield },
 ];
@@ -14,6 +21,20 @@ const nav = [
 export function AppShell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  async function handleSignOut() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    toast.success("Berhasil keluar");
+    navigate({ to: "/auth", replace: true });
+  }
+
+  const initials = (user?.user_metadata?.full_name || user?.email || "U").trim().charAt(0).toUpperCase();
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
@@ -45,12 +66,26 @@ export function AppShell({ children }: { children: ReactNode }) {
             </Link>
           );
         })}
-        <div className="mt-auto p-3 rounded-xl bg-gradient-soft border border-border">
-          <div className="text-sm font-medium">Coba asesmen baru</div>
-          <p className="text-xs text-muted-foreground mt-1">Lihat perkembangan kemampuanmu.</p>
-          <Link to="/assessment/goal" className="mt-3 inline-flex items-center justify-center w-full rounded-lg bg-gradient-primary text-primary-foreground text-sm font-medium py-2 shadow-glow">
-            Mulai
-          </Link>
+        <div className="mt-auto space-y-3">
+          <div className="p-3 rounded-xl bg-gradient-soft border border-border">
+            <div className="text-sm font-medium">Coba asesmen baru</div>
+            <p className="text-xs text-muted-foreground mt-1">Lihat perkembangan kemampuanmu.</p>
+            <Link to="/assessment/goal" className="mt-3 inline-flex items-center justify-center w-full rounded-lg bg-gradient-primary text-primary-foreground text-sm font-medium py-2 shadow-glow">
+              Mulai
+            </Link>
+          </div>
+          {user && (
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-secondary/30 p-2.5">
+              <div className="size-9 shrink-0 rounded-full bg-gradient-primary text-primary-foreground grid place-items-center font-semibold text-sm">{initials}</div>
+              <div className="min-w-0 flex-1">
+                <div className="text-xs font-medium truncate">{user.user_metadata?.full_name || user.email}</div>
+                <div className="text-[10px] text-muted-foreground truncate">{user.email}</div>
+              </div>
+              <button onClick={handleSignOut} aria-label="Keluar" className="size-8 grid place-items-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary transition">
+                <LogOut className="size-4" />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -64,7 +99,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             <div className="size-7 rounded-lg bg-gradient-primary grid place-items-center"><Sparkles className="size-4 text-primary-foreground" /></div>
             <span className="font-display font-bold">Kapable.ai</span>
           </Link>
-          <div className="size-9" />
+          <Link to="/profile" aria-label="Profil" className="size-9 grid place-items-center rounded-lg bg-gradient-primary text-primary-foreground font-semibold text-sm shadow-glow">
+            {initials}
+          </Link>
         </header>
         <main className="px-4 sm:px-6 lg:px-10 py-6 lg:py-10 max-w-7xl mx-auto">
           {children}

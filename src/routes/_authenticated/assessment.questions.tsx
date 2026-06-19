@@ -4,7 +4,7 @@ import { mockQuestions } from "@/lib/mock-data";
 import { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export const Route = createFileRoute("/assessment/questions")({
+export const Route = createFileRoute("/_authenticated/assessment/questions")({
   head: () => ({ meta: [{ title: "Pertanyaan Asesmen — Kapable.ai" }, { name: "description", content: "Jawab pertanyaan asesmen satu per satu." }] }),
   component: QuestionsPage,
 });

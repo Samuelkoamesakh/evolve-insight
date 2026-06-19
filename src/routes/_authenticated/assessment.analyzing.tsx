@@ -2,8 +2,11 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Sparkles, Brain, LineChart, Wand2, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { mockResult } from "@/lib/mock-data";
+import { toast } from "sonner";
 
-export const Route = createFileRoute("/assessment/analyzing")({
+export const Route = createFileRoute("/_authenticated/assessment/analyzing")({
   head: () => ({ meta: [{ title: "Menganalisis... — Kapable.ai" }, { name: "description", content: "AI sedang menganalisis jawabanmu." }] }),
   component: Analyzing,
 });
@@ -21,8 +24,44 @@ function Analyzing() {
     const t1 = setTimeout(() => setStep(1), 900);
     const t2 = setTimeout(() => setStep(2), 1800);
     const t3 = setTimeout(() => setStep(3), 2700);
-    const t4 = setTimeout(() => nav({ to: "/dashboard" }), 3400);
-    return () => { [t1, t2, t3, t4].forEach(clearTimeout); };
+
+    let cancelled = false;
+    const saveAndGo = async () => {
+      try {
+        const { data: u } = await supabase.auth.getUser();
+        if (!u.user) {
+          nav({ to: "/auth" });
+          return;
+        }
+        const goalId = (typeof window !== "undefined" && sessionStorage.getItem("kapable:lastGoalId")) || "career";
+        const goal = (typeof window !== "undefined" && sessionStorage.getItem("kapable:lastGoal")) || "Rekomendasi Karier";
+        const { data, error } = await supabase
+          .from("assessments")
+          .insert({
+            user_id: u.user.id,
+            goal,
+            goal_id: goalId,
+            score: mockResult.overallScore,
+            level: mockResult.level,
+            summary: mockResult.summary,
+            result: mockResult as any,
+          })
+          .select("id")
+          .single();
+        if (error) throw error;
+        if (cancelled) return;
+        nav({ to: "/report/$id", params: { id: data.id } });
+      } catch (err: any) {
+        if (cancelled) return;
+        toast.error(err?.message ?? "Gagal menyimpan hasil");
+        nav({ to: "/dashboard" });
+      }
+    };
+    const t4 = setTimeout(saveAndGo, 3400);
+    return () => {
+      cancelled = true;
+      [t1, t2, t3, t4].forEach(clearTimeout);
+    };
   }, [nav]);
 
   return (
