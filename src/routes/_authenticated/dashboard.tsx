@@ -10,7 +10,7 @@ import {
   Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/_authenticated/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Dashboard — Kapable.ai" },
