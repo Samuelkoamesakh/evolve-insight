@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/report/$id")({
 });
 
 function ReportPage() {
-  const { id } = useParams({ from: "/report/$id" });
+  const { id } = useParams({ from: "/_authenticated/report/$id" });
   const entry = mockHistory.find((h) => h.id === id) ?? mockHistory[0];
   const r = mockResult;
   const reportRef = useRef<HTMLDivElement>(null);
