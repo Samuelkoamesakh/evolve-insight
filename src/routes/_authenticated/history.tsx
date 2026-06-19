@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/AppShell";
-import { mockHistory } from "@/lib/mock-data";
-import { Plus, ArrowRight, FileText, Search } from "lucide-react";
+import { Plus, ArrowRight, FileText, Search, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/history")({
   head: () => ({ meta: [{ title: "Riwayat Asesmen — Kapable.ai" }, { name: "description", content: "Lihat semua asesmen yang pernah kamu kerjakan." }] }),
@@ -11,7 +12,18 @@ export const Route = createFileRoute("/_authenticated/history")({
 
 function HistoryPage() {
   const [q, setQ] = useState("");
-  const items = mockHistory.filter((h) => h.goal.toLowerCase().includes(q.toLowerCase()));
+  const { data, isLoading } = useQuery({
+    queryKey: ["assessments"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("assessments")
+        .select("id, goal, score, level, created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+  const items = (data ?? []).filter((h) => h.goal.toLowerCase().includes(q.toLowerCase()));
   return (
     <AppShell>
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -27,7 +39,9 @@ function HistoryPage() {
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cari berdasarkan tujuan..." className="w-full rounded-xl border border-input bg-background pl-9 pr-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
       </div>
 
-      {items.length === 0 ? (
+      {isLoading ? (
+        <div className="mt-10 grid place-items-center py-12 text-muted-foreground"><Loader2 className="size-5 animate-spin" /></div>
+      ) : items.length === 0 ? (
         <EmptyState />
       ) : (
         <div className="mt-6 rounded-3xl border border-border bg-card overflow-hidden shadow-soft">
@@ -38,10 +52,10 @@ function HistoryPage() {
             <tbody>
               {items.map((h) => (
                 <tr key={h.id} className="border-t border-border hover:bg-secondary/30 transition">
-                  <td className="p-4">{h.date}</td>
+                  <td className="p-4">{new Date(h.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}</td>
                   <td className="p-4 font-medium">{h.goal}</td>
                   <td className="p-4"><span className="font-bold text-gradient">{h.score}</span></td>
-                  <td className="p-4"><span className="text-xs rounded-full bg-gradient-soft px-2 py-1">{h.level}</span></td>
+                  <td className="p-4"><span className="text-xs rounded-full bg-gradient-soft px-2 py-1">{h.level ?? "-"}</span></td>
                   <td className="p-4 text-right"><Link to="/report/$id" params={{ id: h.id }} className="inline-flex items-center gap-1 text-primary font-medium text-sm">View Details <ArrowRight className="size-4" /></Link></td>
                 </tr>
               ))}
