@@ -5,7 +5,7 @@ import { mockCriteria } from "@/lib/mock-data";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
-export const Route = createFileRoute("/assessment/criteria")({
+export const Route = createFileRoute("/_authenticated/assessment/criteria")({
   head: () => ({ meta: [{ title: "Kriteria AI — Kapable.ai" }, { name: "description", content: "Pratinjau kriteria asesmen yang dihasilkan AI." }] }),
   component: CriteriaPage,
 });

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Sparkles, Brain, LineChart, Wand2, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
-export const Route = createFileRoute("/assessment/analyzing")({
+export const Route = createFileRoute("/_authenticated/assessment/analyzing")({
   head: () => ({ meta: [{ title: "Menganalisis... — Kapable.ai" }, { name: "description", content: "AI sedang menganalisis jawabanmu." }] }),
   component: Analyzing,
 });

@@ -4,7 +4,7 @@ import { mockAdminStats } from "@/lib/mock-data";
 import { Users, FileBarChart, Activity, Gauge, MoreHorizontal } from "lucide-react";
 import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, AreaChart, Area, CartesianGrid } from "recharts";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin Dashboard — Kapable.ai" }, { name: "description", content: "Pantau pengguna, asesmen, dan performa platform." }] }),
   component: AdminPage,
 });

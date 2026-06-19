@@ -11,7 +11,7 @@ import {
 import { motion } from "framer-motion";
 import { useRef, useState } from "react";
 
-export const Route = createFileRoute("/report/$id")({
+export const Route = createFileRoute("/_authenticated/report/$id")({
   head: () => ({
     meta: [
       { title: "Capability Report — Kapable.ai" },

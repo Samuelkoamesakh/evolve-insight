@@ -4,7 +4,7 @@ import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import { assessmentGoals } from "@/lib/mock-data";
 import { motion } from "framer-motion";
 
-export const Route = createFileRoute("/assessment/goal")({
+export const Route = createFileRoute("/_authenticated/assessment/goal")({
   head: () => ({ meta: [{ title: "Pilih Tujuan Asesmen — Kapable.ai" }, { name: "description", content: "Pilih tujuan asesmen agar AI menyusun kriteria yang relevan." }] }),
   component: GoalPage,
 });
