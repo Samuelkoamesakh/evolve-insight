@@ -1,11 +1,12 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { Sparkles, LayoutDashboard, History, Settings, Shield, Home, Menu, X } from "lucide-react";
+import { Sparkles, LayoutDashboard, History, Settings, Shield, Home, Menu, X, FileBarChart } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const nav = [
-  { to: "/dashboard", label: "Hasil Terbaru", icon: LayoutDashboard },
-  { to: "/history", label: "Riwayat", icon: History },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { to: "/report/a1", label: "Capability Report", icon: FileBarChart },
+  { to: "/history", label: "Riwayat Asesmen", icon: History },
   { to: "/settings", label: "Pengaturan", icon: Settings },
   { to: "/admin", label: "Admin", icon: Shield },
 ];
